@@ -25,6 +25,7 @@
 #include <SPI.h>
 #include <SoftwareSerial.h>
 #include "nextion.cpp"
+#include "tick.cpp"
 
 #define PIN_LCD_RX 5
 #define PIN_LCD_TX 4
@@ -32,6 +33,7 @@
 #define PIN_CAN_INT 2                 // interrupt
 //#define DEBUG_CAN_ID 1521           // If defined, dump frames sent to this CAN id
 #define HOUSEKEEPING_INTERVAL_MS 200  // How frequently to run watchdog, display refresh, etc
+#define HOUSEKEEPING_PHASE_MS 100     // When to start first housekeeping run
 
 MCP_CAN CAN0(PIN_CAN_CS);
 SoftwareSerial lcdstream(PIN_LCD_RX, PIN_LCD_TX);
@@ -180,11 +182,9 @@ void check_watchdogs()
 
 void loop()
 {
-  static uint32_t next_tick = 0;
-  if (millis() > next_tick) {
-    // Schedule housekeeping to run at the start of the next tick.
-    // If the system can't keep up then runs will be skipped.
-    next_tick = HOUSEKEEPING_INTERVAL_MS + millis() / HOUSEKEEPING_INTERVAL_MS * HOUSEKEEPING_INTERVAL_MS;
+  static Tick housekeeping_tick(HOUSEKEEPING_INTERVAL_MS, HOUSEKEEPING_PHASE_MS);
+
+  if (housekeeping_tick.tocked()) {
     refresh_labels();
     check_watchdogs();
   }
