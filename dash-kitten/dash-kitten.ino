@@ -35,6 +35,14 @@
 #define HOUSEKEEPING_INTERVAL_MS 200  // How frequently to run watchdog, display refresh, etc
 #define HOUSEKEEPING_PHASE_MS 100     // When to start first housekeeping run
 
+#define ADC_PAGE_1_INTERVAL_MS 50     // How frequently to transmit ADC Page 1 data
+#define ADC_PAGE_1_PHASE_MS 15        // When to start first ADC Page 1 transmission
+#define ADC_PAGE_1_ID 0x20            // Destination CAN ID for Page 1
+
+#define ADC_PAGE_2_INTERVAL_MS 50     // How frequently to transmit ADC Page 2 data
+#define ADC_PAGE_2_PHASE_MS 25        // When to start first ADC Page 2 transmission
+#define ADC_PAGE_2_ID 0x21            // Destination CAN ID for Page 2
+
 MCP_CAN CAN0(PIN_CAN_CS);
 SoftwareSerial lcdstream(PIN_LCD_RX, PIN_LCD_TX);
 
@@ -180,13 +188,40 @@ void check_watchdogs()
   lcdstream.print("clk.val=0" EOC);  // Reset the Nextion watchdog
 }
 
+// Sample ADCs and transmit them to CAN
+void can_send_adc(
+  uint16_t can_id,     // CAN ID to send sample data
+  uint8_t a,           // Analog pin ID
+  uint8_t b,           // Analog pin ID
+  uint8_t c,           // Analog pin ID
+  uint8_t d            // Analog pin ID
+  )
+{
+  uint16_t samples[4];
+  samples[0] = htons(analogRead(a));
+  samples[1] = htons(analogRead(b));
+  samples[2] = htons(analogRead(c));
+  samples[3] = htons(analogRead(d));
+  CAN0.sendMsgBuf(can_id, 0, 8, (byte *) &samples);
+}
+
 void loop()
 {
-  static Tick housekeeping_tick(HOUSEKEEPING_INTERVAL_MS, HOUSEKEEPING_PHASE_MS);
+  static Tick housekeeping_tick(HOUSEKEEPING_INTERVAL_MS, HOUSEKEEPING_PHASE_MS),
+              adc_page_1_tick(    ADC_PAGE_1_INTERVAL_MS,   ADC_PAGE_1_PHASE_MS),
+              adc_page_2_tick(    ADC_PAGE_2_INTERVAL_MS,   ADC_PAGE_2_PHASE_MS);
 
   if (housekeeping_tick.tocked()) {
     refresh_labels();
     check_watchdogs();
+  }
+
+  if (adc_page_1_tick.tocked()) {
+    can_send_adc(ADC_PAGE_1_ID, A0, A1, A2, A3);
+  }
+
+  if (adc_page_2_tick.tocked()) {
+    can_send_adc(ADC_PAGE_2_ID, A4, A5, A6, A7); // Note that A6 and A7 don't physically exist on DIP28-based AVRs
   }
 
   if (!digitalRead(PIN_CAN_INT)) { // CAN frame waiting in receive buffer
