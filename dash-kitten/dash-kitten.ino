@@ -24,8 +24,9 @@
 #include <mcp_can.h>
 #include <SPI.h>
 #include <SoftwareSerial.h>
-#include "nextion.cpp"
-#include "tick.cpp"
+#include "nextion.h"
+#include "tick.h"
+#include "dash_kitten.h"
 
 #define PIN_LCD_RX 5
 #define PIN_LCD_TX 4
