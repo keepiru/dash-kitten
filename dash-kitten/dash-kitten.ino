@@ -1,4 +1,4 @@
-/*
+/**
  *  TurboKitten Digital Dashboard
  *
  *  This is an Arduino sketch which receives data from a MegaSquirt via CAN BUS
@@ -20,6 +20,7 @@
  *  with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+/// @file
 
 #include <mcp_can.h>
 #include <SPI.h>
@@ -28,24 +29,25 @@
 #include "tick.h"
 #include "dash_kitten.h"
 
-#define PIN_LCD_RX 5
-#define PIN_LCD_TX 4
-#define PIN_CAN_CS 9                  // chip select
-#define PIN_CAN_INT 2                 // interrupt
-//#define DEBUG_CAN_ID 1521           // If defined, dump frames sent to this CAN id
-#define HOUSEKEEPING_INTERVAL_MS 200  // How frequently to run watchdog, display refresh, etc
-#define HOUSEKEEPING_PHASE_MS 100     // When to start first housekeeping run
+#define PIN_LCD_RX 5                  ///< Nextion LCD receive pin
+#define PIN_LCD_TX 4                  ///< Nextion LCD transmit pin
+#define PIN_CAN_CS 9                  ///< chip select
+#define PIN_CAN_INT 2                 ///< interrupt
+//#define DEBUG_CAN_ID 1521           ///< If defined, dump frames sent to this CAN id
+#define HOUSEKEEPING_INTERVAL_MS 200  ///< How frequently to run watchdog, display refresh, etc
+#define HOUSEKEEPING_PHASE_MS 100     ///< When to start first housekeeping run
 
-#define ADC_PAGE_1_INTERVAL_MS 50     // How frequently to transmit ADC Page 1 data
-#define ADC_PAGE_1_PHASE_MS 15        // When to start first ADC Page 1 transmission
-#define ADC_PAGE_1_ID 0x20            // Destination CAN ID for Page 1
+#define ADC_PAGE_1_INTERVAL_MS 50     ///< How frequently to transmit ADC Page 1 data
+#define ADC_PAGE_1_PHASE_MS 15        ///< When to start first ADC Page 1 transmission
+#define ADC_PAGE_1_ID 0x20            ///< Destination CAN ID for Page 1
 
-#define ADC_PAGE_2_INTERVAL_MS 50     // How frequently to transmit ADC Page 2 data
-#define ADC_PAGE_2_PHASE_MS 25        // When to start first ADC Page 2 transmission
-#define ADC_PAGE_2_ID 0x21            // Destination CAN ID for Page 2
+#define ADC_PAGE_2_INTERVAL_MS 50     ///< How frequently to transmit ADC Page 2 data
+#define ADC_PAGE_2_PHASE_MS 25        ///< When to start first ADC Page 2 transmission
+#define ADC_PAGE_2_ID 0x21            ///< Destination CAN ID for Page 2
 
-MCP_CAN CAN0(PIN_CAN_CS);
-SoftwareSerial lcdstream(PIN_LCD_RX, PIN_LCD_TX);
+MCP_CAN CAN0(PIN_CAN_CS);                          ///< CAN BUS transceiver to communicate with ECU
+
+SoftwareSerial lcdstream(PIN_LCD_RX, PIN_LCD_TX);  ///< Serial stream to communicate with LCD
 
 /*
  *  Set up the gauges.
@@ -69,7 +71,7 @@ NextionObject map_g(&lcdstream,    "v0", "l0",     "",    10,        0,       0,
               bat_g(&lcdstream,    "b3",   "",    "v",    10,        1,     120,        130,         147,     150, 500),
               warn_g(&lcdstream, "warn",   "",     "",     0,        0,       0,          0,           0,       0, 50);
 
-/*
+/**
  *  Receive and process an incoming CAN frame.  Any known ids will be
  *  decoded and sent to the LCD.
  */
@@ -149,6 +151,9 @@ void handleCANFrame(void)
   }
 }
 
+/**
+ *  Boot-time initialization.
+ */
 void setup()
 {
   CAN0.begin(CAN_500KBPS);      // Assumes module with 16MHz clock - use CAN_1000KBPS for 8MHz clock.
@@ -159,7 +164,9 @@ void setup()
   Serial.println("Boot");
 }
 
-// Refresh all the label values.
+/**
+ *  Refresh all the label values.
+ */
 void refresh_labels()
 {
   map_g.label("MAP kPa");
@@ -171,7 +178,9 @@ void refresh_labels()
   egt_g.label("EGT degF");
 }
 
-// Check the watchdog on all gauges.
+/**
+ *  Check the watchdog on all gauges.
+ */
 void check_watchdogs()
 {
   map_g.watchdog();
@@ -189,7 +198,9 @@ void check_watchdogs()
   lcdstream.print("clk.val=0" EOC);  // Reset the Nextion watchdog
 }
 
-// Sample ADCs and transmit them to CAN
+/**
+ *  Sample ADCs and transmit them to CAN
+ */
 void can_send_adc(
   uint16_t can_id,     // CAN ID to send sample data
   uint8_t a,           // Analog pin ID
@@ -206,6 +217,9 @@ void can_send_adc(
   CAN0.sendMsgBuf(can_id, 0, 8, (byte *) &samples);
 }
 
+/**
+ *  The main loop
+ */
 void loop()
 {
   static Tick housekeeping_tick(HOUSEKEEPING_INTERVAL_MS, HOUSEKEEPING_PHASE_MS),

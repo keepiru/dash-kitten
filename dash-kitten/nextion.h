@@ -18,22 +18,27 @@
  */
 
 #define EOC "\xff\xff\xff" // Nextion end of command
+
+/**
+ *  This is an Arduino library which handles updating display objects (text,
+ *  gauge, etc) on a Nextion LCD over a serial port.
+ */
 class NextionObject
 {
   private:
-    Stream *_stream;                   // Stream object where the LCD is connected
-    String _suffix,                    // Print this after the value
-           _id,                        // Name of the object on the display
-           _lid,                       // Name of the label on the display
+    Stream *_stream;
+    String _suffix,
+           _id,
+           _lid,
            _old_pco,                   // Store the old color to optimize repeated updates
            _old_txt;                   // Store the old text to optimize repeated updates
-    uint8_t _scale,                    // Fixed decimal scaling factor
-            _decimals;                 // Number of digits to display after the decimal
-    int16_t _red_high,                 // Redline (top)
-            _red_low,                  // Redline (bottom)
-            _yellow_high,              // Yellowline (top)
-            _yellow_low,               // Yellowline (bottom)
-            _refresh_ms;               // Minimum time between refreshes
+    uint8_t _scale,
+            _decimals;
+    int16_t _red_high,
+            _red_low,
+            _yellow_high,
+            _yellow_low,
+            _refresh_ms;
     uint32_t _last_update_time;
 
   public:

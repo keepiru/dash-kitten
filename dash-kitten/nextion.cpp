@@ -1,13 +1,6 @@
 /*
  *  TurboKitten Digital Dashboard
  *
- *  This is an Arduino library which handles updating display objects on a
- *  Nextion LCD over a serial port.
- *
- *  This currently only handles text objects.  The #val method will convert the
- *  value based on the _scale factor and display a fixed _decimals number of places
- *  after the point.
- *
  *  Copyright (C) 2015-2016  Chris "Kai" Frederick
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -29,21 +22,21 @@
 #include <math.h>
 #include "nextion.h"
 
-/*
- * Wrapper for an object (text, gauge, etc) on a Nextion display
+/**
+ *  Constructor
  */
 NextionObject::NextionObject(
-  Stream *stream,                  // The Stream object where the LCD is connected
-  const char *id,                  // The name of the object on the display
-  const char *lid,                 // Name of the label on the display
-  const char *suffix,              // Print this after the value
-  uint16_t scale,                  // Fixed decimal scaling factor
-  uint8_t  decimals,               // Number of digits after the decimal
-  int16_t  red_low,                // Display red if the PV goes under this
-  int16_t  yellow_low,             // Display yellow if the PV goes under this
-  int16_t  yellow_high,            // Display yellow if the PV goes over this
-  int16_t  red_high,               // Display red if the PV goes over this
-  uint16_t refresh_ms              // Minimum time between refreshes
+  Stream *stream,                      ///< The Stream object where the LCD is connected
+  const char *id,                      ///< The name of the object on the display
+  const char *lid,                     ///< Name of the label on the display
+  const char *suffix,                  ///< Print this after the value
+  uint16_t scale,                      ///< Fixed decimal scaling factor
+  uint8_t  decimals,                   ///< Number of digits after the decimal
+  int16_t  red_low,                    ///< Display red if the PV goes under this
+  int16_t  yellow_low,                 ///< Display yellow if the PV goes under this
+  int16_t  yellow_high,                ///< Display yellow if the PV goes over this
+  int16_t  red_high,                   ///< Display red if the PV goes over this
+  uint16_t refresh_ms                  ///< Minimum time between refreshes
 )
 {
   _stream      = stream;
@@ -59,11 +52,11 @@ NextionObject::NextionObject(
   _refresh_ms  = refresh_ms;
 }
 
-/*
+/**
  *  Update the text on the object.
  */
 void NextionObject::txt(
-  String text                      // text - New value to show
+  String text                          ///< text - New value to show
 )
 {
   // Ignore update if the current value is recent enough.
@@ -75,35 +68,36 @@ void NextionObject::txt(
   _stream->print(_id + ".txt=\"" + text + "\"" + EOC);
 }
 
-/*
- *  Update the object's label
+/**
+ *  Update the object's label.
  */
 void NextionObject::label(
-  String text                      // Label text
+  String text                          ///< Label text
 )
 {
   _stream->print(_lid + ".txt=\"" + text + "\"" + EOC);
 }
 
-/*
- *  Change the color on the object.  The change takes effect on the next refresh.
+/**
+ *  Change the color on the object.  The change takes effect on the next
+ *  refresh.
  */
 void NextionObject::pco(
-  String color                     // color - New color as name "RED" or RGB(5,6,5) value "63488"
+  String color                         ///< color - New color as name "RED" or RGB(5,6,5) value "63488"
 )
 {
-  if (color != _old_pco) {         // Don't bother updating if the color is already set
+  if (color != _old_pco) {             // Don't bother updating if the color is already set
     _stream->print(_id + ".pco=" + color + EOC);
   }
   _old_pco = color;
 }
 
-/*
- *  Update the text on the object with a fixed-point value.  The
- *  red/yellow lines will be checked, and the text color set if needed.
+/**
+ *  Update the text on an object with a fixed-point value.  The red/yellow
+ *  lines will be checked, and the text color set if needed.
  */
 void NextionObject::val(
-  int32_t value                    // New value in raw, unscaled units
+  int32_t value                        ///< New value in raw, unscaled units
 )
 {
 
@@ -130,12 +124,12 @@ void NextionObject::val(
   txt(out_s);
 }
 
-/*
+/**
  *  Update the AFR gauge's redline/yellowline based on the current AFR target.
  *  This should only be called on the AFR gauge.
  */
 void NextionObject::update_afr_target(
-  uint8_t afr_target               // New AFR target
+  uint8_t afr_target               ///< New AFR target
 )
 {
   // FIXME: inline constants
@@ -145,7 +139,7 @@ void NextionObject::update_afr_target(
   _red_high    = afr_target + 10;
 }
 
-/*
+/**
  *  Check this gauge's freshness.  If it's expired, clear the value.
  *  No data is better than bad data.
  */

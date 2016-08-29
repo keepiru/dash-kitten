@@ -21,27 +21,23 @@
 #include <Arduino.h>
 #include "tick.h"
 
-/*
- *  Simple periodic event scheduler
- *
- *  This is used to track when periodic tasks should run.  It does not actually
- *  run them - it just lets you know if the task is due to be run.  The
- *  interval specifies how often to run them.  The phase is used so mulitple
- *  tasks are staggered instead of all running at the same time.
+/**
+ *  Constructor
  */
 Tick::Tick(
-    uint16_t interval,
-    uint16_t phase
+    uint16_t interval,                 ///< Interval between ticks in milliseconds
+    uint16_t phase                     ///< Time for the first tick in milliseconds since boot
     )
 {
   _interval  = interval;
   _phase     = phase;
-  _next_tick = phase;    // If the system has already be up for phase ms then the timer will already be tocked.
+  _next_tick = phase;                  // If the system has already be up for phase ms then the timer will already be tocked.
 }
 
-/*
- *  Check if the task is due to run.  If so, return true and schedule the next
- *  tick.  Otherwise return false.
+/**
+ *  Check if the task is due to run.  If so, schedule the next tick.
+ *
+ *  @return true iff task is due to run.
  */
 bool Tick::tocked(void)
 {

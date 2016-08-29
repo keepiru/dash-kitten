@@ -28,9 +28,9 @@
 class Tick
 {
   private:
-    uint16_t _interval,      // Interval between ticks in milliseconds
-             _phase;         // Time for the first tick in milliseconds since boot
-    uint32_t _next_tick;     // Time for the next tick in milliseconds since boot
+    uint16_t _interval,
+             _phase;
+    uint32_t _next_tick;
 
   public:
     Tick(
