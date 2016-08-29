@@ -21,6 +21,10 @@
 #include <SoftwareSerial.h>
 #include <math.h>
 #include "nextion.h"
+#include "led.h"
+
+LED Warning_LED(PIN_LED_WARNING);
+LED Error_LED(PIN_LED_ERROR);
 
 /**
  *  Constructor
@@ -103,8 +107,10 @@ void NextionObject::val(
 
   if (value > _red_high || value < _red_low) { // Red takes precedence
     pco("RED");
+    Error_LED.illuminate(LED_DURATION_MS);
   } else if (value > _yellow_high || value < _yellow_low) {
     pco("YELLOW");
+    Warning_LED.illuminate(LED_DURATION_MS);
   } else {
     pco("GREEN");
   }
