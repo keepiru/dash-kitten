@@ -22,10 +22,12 @@
 
 #define HOUSEKEEPING_INTERVAL_MS 200  ///< How frequently to run watchdog, display refresh, etc
 #define HOUSEKEEPING_PHASE_MS 100     ///< When to start first housekeeping run
+#define LED_ILLUMINATION_DURATION 500 ///< How long to keep LEDs on, milliseconds
 
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <math.h>
+#include "led.h"
 #include "nextion.h"
 #include "tick.h"
 
@@ -112,8 +114,10 @@ void NextionObject::val(
 
   if (value > _red_high || value < _red_low) { // Red takes precedence
     pco("RED");
+    Error_LED.illuminate(LED_ILLUMINATION_DURATION);
   } else if (value > _yellow_high || value < _yellow_low) {
     pco("YELLOW");
+    Warning_LED.illuminate(LED_ILLUMINATION_DURATION);
   } else {
     pco("GREEN");
   }

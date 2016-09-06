@@ -4,8 +4,9 @@ Arduino-powered digital dashboards... For kittens!
 This is designed to receive data over CAN BUS from a MegaSquirt and present it
 on a Nextion LCD display.
 
-It also allows you to use the Arduino's analog-in pins as extra analog inputs
-for the MegaSquirt.
+It also allows you to:
+* use the Arduino's analog-in pins as extra analog inputs for the MegaSquirt
+* Drive warning LEDs / idiot lights from the Arduino
 
 ## Requirements
 This software is designed for:
@@ -54,6 +55,10 @@ Connect the Nextion display as follows:
 * Red - 5v
 * Yellow - Digital pin 4
 * Blue - Digital pin 5
+
+Warning LEDs / idiot lights can be connected to:
+* Warning: Digital pin 10
+* Error: Digital pin 11
 
 ## MegaSquirt setup
 
