@@ -61,4 +61,22 @@ class NextionObject
     void val(int32_t value);
     void update_afr_target(uint8_t afr_target);
     void watchdog(void);
+
+    static void init(void);
+    static void refresh_labels(void);
+    static void check_watchdogs(void);
+    static void housekeeping(void);
 };
+
+extern NextionObject map_g,
+  afr_g,
+  rpm_g,
+  vss_g,
+  art_g,
+  spk_g,
+  egt_g,
+  clt_g,
+  mat_g,
+  oit_g,
+  bat_g,
+  warn_g;
