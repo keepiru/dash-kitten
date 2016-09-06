@@ -20,27 +20,24 @@
  *  with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file
-
-#include "nextion.h"
-#include "canbus.h"
+#include <mcp_can.h>
 
 /**
- *  Boot-time initialization.
+ * Handle all interaction with CAN bus.
+ *
+ * @todo Possibly split ADC handling to a separate class.
  */
-void setup()
+class CanBus
 {
-  CanBus::init();
-  NextionObject::init();
-  Serial.begin(115200);
-  Serial.println("Boot");
-}
-
-/**
- *  The main loop
- */
-void loop()
-{
-  NextionObject::housekeeping();
-  CanBus::housekeeping();
-}
+  public:
+    static void init(void);
+    static void can_send_adc(
+        uint16_t can_id,
+        uint8_t a,
+        uint8_t b,
+        uint8_t c,
+        uint8_t d
+        );
+    static void handleCANFrame(void);
+    static void housekeeping(void);
+};
