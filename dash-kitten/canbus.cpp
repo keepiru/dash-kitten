@@ -25,6 +25,7 @@
 #include "dash_kitten.h"
 #include "nextion.h"
 #include "tick.h"
+#include "led.h"
 
 #define PIN_CAN_CS 9                   ///< chip select
 #define PIN_CAN_INT 2                  ///< interrupt
@@ -37,6 +38,8 @@
 #define ADC_PAGE_2_INTERVAL_MS 50      ///< How frequently to transmit ADC Page 2 data
 #define ADC_PAGE_2_PHASE_MS 25         ///< When to start first ADC Page 2 transmission
 #define ADC_PAGE_2_ID 0x21             ///< Destination CAN ID for Page 2
+
+#define KNOCK_WARNING_DURATION_MS 1000 ///< How long to keep LEDs on during knock
 
 MCP_CAN CAN0(PIN_CAN_CS);              ///< CAN BUS transceiver to communicate with ECU
 
@@ -139,10 +142,10 @@ void CanBus::handleCANFrame(void)
 
     case 1572:
       val =                ntohs(*(uint16_t *) &rxBuf[2]) ;    // Knock retard 0.1deg
-      if (val > 0)
-        warn_g.txt("KNOCK");
-      else
-        warn_g.txt("");
+      if (val > 0) {
+        Error_LED.illuminate(KNOCK_WARNING_DURATION_MS);
+        Warning_LED.illuminate(KNOCK_WARNING_DURATION_MS);
+      }
       break;
   }
 }

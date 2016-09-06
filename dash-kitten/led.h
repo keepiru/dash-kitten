@@ -1,8 +1,5 @@
-/**
+/*
  *  TurboKitten Digital Dashboard
- *
- *  This is an Arduino sketch which receives data from a MegaSquirt via CAN BUS
- *  and displays it on a Nextion LCD panel.
  *
  *  Copyright (C) 2015-2016  Chris "Kai" Frederick
  *
@@ -20,29 +17,23 @@
  *  with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-/// @file
-
-#include "led.h"
-#include "nextion.h"
-#include "canbus.h"
-
 /**
- *  Boot-time initialization.
+ * This is a simple LED handler.  It allows multiple sources to turn on a
+ * shared LED and ensure it stays on for a specified duration.
  */
-void setup()
+class LED
 {
-  CanBus::init();
-  NextionObject::init();
-  Serial.begin(115200);
-  Serial.println("Boot");
-}
+  private:
+    uint8_t _pin;                      ///< Arduino Pin ID for this LED
+    uint32_t _shutoff_time;            ///< Turn off the LED after this time, milliseconds since boot
 
-/**
- *  The main loop
- */
-void loop()
-{
-  NextionObject::housekeeping();
-  CanBus::housekeeping();
-  LED::housekeeping();
-}
+  public:
+    LED(uint8_t pin);
+    void illuminate(uint32_t duration);
+    void deluminate(void);
+    static void housekeeping(void);
+};
+
+extern LED Warning_LED;
+extern LED Error_LED;
+extern LED Kittens_LED;
