@@ -186,7 +186,7 @@ void NextionObject::refresh_labels(void)
   art_g.label("AFR trgt");
   vss_g.label("VSS mph");
   spk_g.label("Advance");
-  egt_g.label("EGT degF");
+  egt_g.label("EGT degC");
 }
 
 /**
@@ -221,6 +221,7 @@ void NextionObject::housekeeping(void)
   if (housekeeping_tick.tocked()) {
     refresh_labels();
     check_watchdogs();
+    displayTime();
   }
 }
 
@@ -242,7 +243,7 @@ NextionObject map_g(&lcdstream,    "v0", "l0",     "",    10,        0,       0,
               egt_g(&lcdstream,    "v6", "l6",     "",     1,        0,     500,        700,        1600,    1800, 100),
               clt_g(&lcdstream,    "b0",   "", "cltF",    10,        0,     600,       1500,        2000,    2200, 1010),
               mat_g(&lcdstream,    "b1",   "", "matF",    10,        0,     200,        400,        1400,    1600, 200),
-              oit_g(&lcdstream,    "b2",   "", "oilF",     1,        0,  -32768,     -32768,       32767,   32767, 1000),
+              clk_g(&lcdstream,    "b2",   "",     "",     1,        0,  -32768,     -32768,       32767,   32767, 20),
               bat_g(&lcdstream,    "b3",   "",    "v",    10,        1,     120,        130,         147,     150, 500),
               warn_g(&lcdstream, "warn",   "",     "",     0,        0,       0,          0,           0,       0, 50);
 

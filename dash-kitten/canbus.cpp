@@ -84,17 +84,43 @@ void CanBus::handleCANFrame(void)
 #ifdef DEBUG_CAN_ID
   if (rxId == DEBUG_CAN_ID) {
     Serial.print(rxId);
-    Serial.print(" ");
+    Serial.print( F( " len: " ) );
+    Serial.print( len );
+    Serial.print( F( " data: " ) );
     uint8_t i;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < len; i++) {
       Serial.print(rxBuf[i], HEX);
       Serial.print(" ");
+    }
+    if( CAN0.isRemoteRequest() ) {
+      Serial.print( " RR" );
+    }
+    if( CAN0.isExtendedFrame() ) {
+      Serial.print( " X" );
     }
     Serial.println(" !");
   }
 #endif
 
   switch (rxId) {
+    case MS3_RTC_REQ_ADDR:
+      {
+        DateTime dt = RTC.now();
+        Serial.print( F( "Read RTC per-request as: " ) );
+        printDateTime( &dt );
+        txRtcFrame( &dt );
+      }
+      break;
+
+    case MS3_RTC_WRITE_ADDR:
+      {
+        DateTime dt = dateTimeFromCan( rxBuf, len );
+        RTC.adjust( dt );
+        Serial.print( F( "Writing RTC from MS3 as: " ) );
+        printDateTime( &dt );
+      }
+      break;
+
     case 1520:
       rpm_g.val(           ntohs(*( int16_t *) &rxBuf[6]));  // RPM 1rpm
       break;
@@ -123,6 +149,18 @@ void CanBus::handleCANFrame(void)
       // Knock input offset 0 uin16_t 0.1pct
       break;
 
+    case 156583992: // WB tx from MS
+    case 33920:     // WB tx from MS
+    case 2131072:   // WB rx from WB
+      // WB EGO
+      break;
+
+    case 1533:
+    case 1537:
+    case 1538:
+      // more MS3 stuff
+      break;
+
     case 1542:
       egt_g.val( (int16_t) ntohs(*( int16_t *) &rxBuf[0]));  // EGT 0.1 degF  (or degC ?), cast for sign
       break;
@@ -143,6 +181,14 @@ void CanBus::handleCANFrame(void)
         warn_g.txt("KNOCK");
       else
         warn_g.txt("");
+      break;
+
+    default:
+      Serial.print( F( "unrecognized can id 0x" ) );
+      Serial.print( rxId, HEX );
+      Serial.print( " (" );
+      Serial.print( rxId );
+      Serial.println( ")" );
       break;
   }
 }
