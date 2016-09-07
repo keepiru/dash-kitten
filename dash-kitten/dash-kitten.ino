@@ -26,7 +26,7 @@
 #include "led.h"
 #include "nextion.h"
 #include "canbus.h"
-#include "rtc.h"
+#include "dash_kitten.h"
 
 /**
  *  Boot-time initialization.
@@ -43,7 +43,6 @@ void setup()
   
   CanBus::init();
   NextionObject::init();
-  Serial.println("Boot");
 }
 
 /**

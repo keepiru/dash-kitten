@@ -25,7 +25,6 @@
 #include "dash_kitten.h"
 #include "nextion.h"
 #include "tick.h"
-#include "rtc.h"
 
 #define PIN_CAN_CS 9                   ///< chip select
 #define PIN_CAN_INT 2                  ///< interrupt

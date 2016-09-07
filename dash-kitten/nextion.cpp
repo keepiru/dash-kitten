@@ -29,7 +29,7 @@
 #include <math.h>
 #include "led.h"
 #include "nextion.h"
-#include "rtc.h"
+#include "dash_kitten.h"
 #include "tick.h"
 
 SoftwareSerial lcdstream(PIN_LCD_RX, PIN_LCD_TX);  ///< Serial stream to communicate with LCD
