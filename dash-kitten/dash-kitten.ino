@@ -28,6 +28,8 @@
 #include "canbus.h"
 #include "dash_kitten.h"
 
+Alpha4 a4;
+
 /**
  *  Boot-time initialization.
  */
@@ -40,7 +42,8 @@ void setup()
   if( !RTC.isrunning() ) {
     Serial.println( F( "RTC is NOT running!  Set time via MS3." ) );
   }
-  
+
+  a4.init();
   CanBus::init();
   NextionObject::init();
 }
@@ -53,5 +56,5 @@ void loop()
   NextionObject::housekeeping();
   CanBus::housekeeping();
   LED::housekeeping();
-  Alpha4::housekeeping();
+  a4.housekeeping();
 }

@@ -3,13 +3,6 @@
 #include "nextion.h"
 #include "alpha4.h"
 
-#define MS3_RTC_REQ_ADDR 28869304
-#define PIN_THERMO_CS 10
-
-Adafruit_MAX31855 Thermo( PIN_THERMO_CS );
-
-Adafruit_AlphaNum4 alpha4 = Adafruit_AlphaNum4();
-
 void Alpha4::init(void)
 {
   alpha4.begin( 0x70 );
@@ -17,7 +10,7 @@ void Alpha4::init(void)
 
 void Alpha4::housekeeping(void)
 {
-  int16_t egt_degC = Thermo.readCelsius();
+  int16_t egt_degC = Thermocouple_EGT.readCelsius();
   egt_g.val( egt_degC );
 
   String egt_degC_str(egt_degC);
