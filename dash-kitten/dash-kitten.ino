@@ -22,9 +22,11 @@
 
 /// @file
 
+#include "alpha4.h"
 #include "led.h"
 #include "nextion.h"
 #include "canbus.h"
+#include "rtc.h"
 
 /**
  *  Boot-time initialization.
@@ -33,6 +35,7 @@ void setup()
 {
   CanBus::init();
   NextionObject::init();
+  TKRTC::init();
   Serial.begin(115200);
   Serial.println("Boot");
 }
@@ -45,4 +48,5 @@ void loop()
   NextionObject::housekeeping();
   CanBus::housekeeping();
   LED::housekeeping();
+  Alpha4::housekeeping();
 }

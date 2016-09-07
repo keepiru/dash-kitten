@@ -77,6 +77,6 @@ extern NextionObject map_g,
   egt_g,
   clt_g,
   mat_g,
-  oit_g,
+  clk_g,
   bat_g,
   warn_g;

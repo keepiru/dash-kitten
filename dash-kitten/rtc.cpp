@@ -1,11 +1,8 @@
+#include <Arduino.h>
 #include <Wire.h>
-#include <RTClib.h>
-#include <RTC_DS3231.h>
-
-RTC_DS3231 RTC;
-
-#define MS3_RTC_REQ_ADDR 28869304
-#define MS3_RTC_WRITE_ADDR 644
+#include "rtc.h"
+#include "canbus.h"
+#include "nextion.h"
 
 U8
 u8FromBcd( char bcd ) {
@@ -16,7 +13,7 @@ U8 intToBcd( U16 in ) {
   return( (in % 10) | (((in % 100) / 10) << 4) );
 }
 
-void RTC::init(void)
+void TKRTC::init(void)
 {
   RTC.begin();
 
@@ -149,7 +146,7 @@ displayTime() {
   DateTime dt = RTC.now();
   char buf[ 10 ];
   rtcTimeForDisplay( &dt, buf );
-  time_g.txt( buf );
+  clk_g.txt( buf );
 }
 
 void

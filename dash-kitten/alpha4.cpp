@@ -1,6 +1,9 @@
 #include <Adafruit_MAX31855.h>
-#include <Adafruit_GFX.h>
 #include <Adafruit_LEDBackpack.h>
+#include "nextion.h"
+#include "alpha4.h"
+#define MS3_RTC_REQ_ADDR 28869304
+
 
 #define PIN_THERMO_CS 10
 Adafruit_MAX31855 Thermo( PIN_THERMO_CS );

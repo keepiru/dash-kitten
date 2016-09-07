@@ -22,6 +22,8 @@
 
 #include <mcp_can.h>
 
+extern MCP_CAN CAN0;
+
 /**
  * Handle all interaction with CAN bus.
  *

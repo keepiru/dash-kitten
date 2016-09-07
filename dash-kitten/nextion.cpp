@@ -29,6 +29,7 @@
 #include <math.h>
 #include "led.h"
 #include "nextion.h"
+#include "rtc.h"
 #include "tick.h"
 
 SoftwareSerial lcdstream(PIN_LCD_RX, PIN_LCD_TX);  ///< Serial stream to communicate with LCD
@@ -204,7 +205,7 @@ void NextionObject::check_watchdogs()
   egt_g.watchdog();
   clt_g.watchdog();
   mat_g.watchdog();
-  oit_g.watchdog();
+  clk_g.watchdog();
   bat_g.watchdog();
   warn_g.watchdog();
   lcdstream.print("clk.val=0" EOC);  // Reset the Nextion watchdog
