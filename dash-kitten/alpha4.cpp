@@ -2,10 +2,10 @@
 #include <Adafruit_LEDBackpack.h>
 #include "nextion.h"
 #include "alpha4.h"
+
 #define MS3_RTC_REQ_ADDR 28869304
-
-
 #define PIN_THERMO_CS 10
+
 Adafruit_MAX31855 Thermo( PIN_THERMO_CS );
 
 Adafruit_AlphaNum4 alpha4 = Adafruit_AlphaNum4();
@@ -17,33 +17,16 @@ void Alpha4::init(void)
 
 void Alpha4::housekeeping(void)
 {
-  double c = Thermo.readCelsius();
-  egt_g.val( (int) c );
-  Serial.print( "thermocouple returned " );
-  if( isnan( c ) ) {
-    Serial.println( "NaN" );
-  } else {
-    Serial.println( c );
-  }
-  char buf[ 4 ];
-  int intC = (int) c;
+  int16_t egt_degC = Thermo.readCelsius();
+  egt_g.val( egt_degC );
+  
+  String egt_degC_str(egt_degC);
+  int8_t blank_spaces = 4 - egt_degC_str.length();
   for( int i = 0; i < 4; i++ ) {
-    char val = (intC % 10) + '0';
-    buf[ 3 - i ] = val;
-    Serial.println( val );
-    intC /= 10;
-  }
-  bool foundNonZero = false;
-  for( int i = 0; i < 4; i++ ) {
-    if( buf[ i ] == '0' ) {
-      if( !foundNonZero ) {
-        alpha4.writeDigitAscii( i, ' ' );
-      } else {
-        alpha4.writeDigitAscii( i, buf[ i ] );
-      }
+    if (i < blank_spaces) {
+      alpha4.writeDigitAscii( i, ' ' );
     } else {
-      alpha4.writeDigitAscii( i, buf[ i ] );
-      foundNonZero = true;
+      alpha4.writeDigitAscii( i, egt_degC_str.charAt(i - blank_spaces));
     }
   }
   alpha4.writeDisplay();

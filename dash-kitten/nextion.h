@@ -40,6 +40,7 @@ class NextionObject
             _yellow_low,
             _refresh_ms;
     uint32_t _last_update_time;
+    static void update_clock(void);
 
   public:
     NextionObject(

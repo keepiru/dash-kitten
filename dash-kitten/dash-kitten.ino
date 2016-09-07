@@ -33,10 +33,16 @@
  */
 void setup()
 {
+  Serial.begin(115200);
+  Serial.println("Boot");
+
+  RTC.begin();
+  if( !RTC.isrunning() ) {
+    Serial.println( F( "RTC is NOT running!  Set time via MS3." ) );
+  }
+  
   CanBus::init();
   NextionObject::init();
-  TKRTC::init();
-  Serial.begin(115200);
   Serial.println("Boot");
 }
 

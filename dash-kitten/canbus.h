@@ -21,8 +21,9 @@
  */
 
 #include <mcp_can.h>
+#include <RTClib.h>
 
-extern MCP_CAN CAN0;
+DateTime dateTimeFromCan( uint8_t *, int );
 
 /**
  * Handle all interaction with CAN bus.
@@ -40,6 +41,7 @@ class CanBus
         uint8_t c,
         uint8_t d
         );
+        static void can_send_rtc(DateTime *dt);
     static void handleCANFrame(void);
     static void housekeeping(void);
 };

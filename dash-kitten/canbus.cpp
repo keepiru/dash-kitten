@@ -39,6 +39,9 @@
 #define ADC_PAGE_2_PHASE_MS 25         ///< When to start first ADC Page 2 transmission
 #define ADC_PAGE_2_ID 0x21             ///< Destination CAN ID for Page 2
 
+#define MS3_RTC_REQ_ADDR 28869304
+#define MS3_RTC_WRITE_ADDR 644
+
 MCP_CAN CAN0(PIN_CAN_CS);              ///< CAN BUS transceiver to communicate with ECU
 
 /**
@@ -66,6 +69,36 @@ void CanBus::can_send_adc(
   samples[2] = htons(analogRead(c));
   samples[3] = htons(analogRead(d));
   CAN0.sendMsgBuf(can_id, 0, 8, (byte *) &samples);
+}
+
+DateTime dateTimeFromCan( uint8_t *rxBuf, int len ) {
+  // the MS3 sends us 8 bytes, but the last one is always zero (should
+  // be the century).
+  DateTime ret( bcd_to_int( rxBuf[ 6 ] ) + 2000, // year
+      bcd_to_int( rxBuf[ 5 ] ),                   // month
+      bcd_to_int( rxBuf[ 4 ] ),                   // day
+      bcd_to_int( rxBuf[ 2 ] ),                   // hour
+      bcd_to_int( rxBuf[ 1 ] ),                   // minute
+      bcd_to_int( rxBuf[ 0 ] ) );                 // second
+  return ret;
+}
+
+void CanBus::can_send_rtc(
+  DateTime * dt
+  )
+{
+  uint8_t txBuf[8];
+  
+  txBuf[ 0 ] = dt->second();
+  txBuf[ 1 ] = dt->minute();
+  txBuf[ 2 ] = dt->hour();
+  txBuf[ 3 ] = dt->dayOfWeek();
+  txBuf[ 4 ] = dt->day();
+  txBuf[ 5 ] = dt->month();
+  txBuf[ 6 ] = dt->year() >> 8;
+  txBuf[ 7 ] = dt->year() & 0xff;
+
+  CAN0.sendMsgBuf( 0x9352838, 1, 8, txBuf );
 }
 
 /**
@@ -107,9 +140,7 @@ void CanBus::handleCANFrame(void)
     case MS3_RTC_REQ_ADDR:
       {
         DateTime dt = RTC.now();
-        Serial.print( F( "Read RTC per-request as: " ) );
-        printDateTime( &dt );
-        txRtcFrame( &dt );
+        can_send_rtc( &dt );
       }
       break;
 
@@ -117,8 +148,7 @@ void CanBus::handleCANFrame(void)
       {
         DateTime dt = dateTimeFromCan( rxBuf, len );
         RTC.adjust( dt );
-        Serial.print( F( "Writing RTC from MS3 as: " ) );
-        printDateTime( &dt );
+        Serial.print( F( "RTC updated from MS3" ) );
       }
       break;
 

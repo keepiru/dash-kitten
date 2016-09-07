@@ -25,3 +25,5 @@
                    ((x)>> 8 & 0x0000FF00UL) | \
                    ((x)>>24 & 0x000000FFUL) )
 #define ntohl(x) htonl(x)
+
+#define bcd_to_int(bcd) ( (bcd >> 4) * 10 + (bcd & 0xf) )

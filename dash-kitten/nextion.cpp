@@ -211,6 +211,14 @@ void NextionObject::check_watchdogs()
   lcdstream.print("clk.val=0" EOC);  // Reset the Nextion watchdog
 }
 
+void NextionObject::update_clock() {
+  DateTime dt = RTC.now();
+  char buf[ 10 ];
+  snprintf(buf, sizeof(buf), "%02u:%02u:%02u",
+    dt.hour(), dt.minute(), dt.second());
+  clk_g.txt( buf );
+}
+
 /**
  * Perform periodic maintenance: check all watchdogs and refresh
  * labels.
@@ -222,7 +230,7 @@ void NextionObject::housekeeping(void)
   if (housekeeping_tick.tocked()) {
     refresh_labels();
     check_watchdogs();
-    displayTime();
+    update_clock();
   }
 }
 
