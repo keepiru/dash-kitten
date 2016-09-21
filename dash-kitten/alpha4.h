@@ -5,7 +5,7 @@
 class Alpha4
 {
   private:
-    const uint8_t __pin_thermocouple_egt_cs = 10;
+    const uint8_t __pin_thermocouple_egt_cs = 6;
     Adafruit_AlphaNum4 alpha4;
     Adafruit_MAX31855 Thermocouple_EGT;
   public:

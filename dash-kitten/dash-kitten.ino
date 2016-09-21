@@ -27,6 +27,7 @@
 #include "nextion.h"
 #include "canbus.h"
 #include "dash_kitten.h"
+#include <Wire.h>
 
 Alpha4 a4;
 
@@ -38,12 +39,13 @@ void setup()
   Serial.begin(115200);
   Serial.println("Boot");
 
-  RTC.begin();
-  if( !RTC.isrunning() ) {
-    Serial.println( F( "RTC is NOT running!  Set time via MS3." ) );
-  }
+  Wire.begin();
+//  RTC.begin();
+//  if( !RTC.isrunning() ) {
+//    Serial.println( F( "RTC is NOT running!  Set time via MS3." ) );
+//  }
 
-  a4.init();
+  //a4.init();
   CanBus::init();
   NextionObject::init();
 }
@@ -53,8 +55,9 @@ void setup()
  */
 void loop()
 {
+//  Serial.println("loop");
   NextionObject::housekeeping();
   CanBus::housekeeping();
-  LED::housekeeping();
-  a4.housekeeping();
+//  LED::housekeeping();
+//  a4.housekeeping();
 }

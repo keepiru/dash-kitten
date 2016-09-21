@@ -21,8 +21,8 @@
 #include "led.h"
 #include "tick.h"
 
-static const uint8_t PIN_WARNING                      = 10; ///< Warning LED pin number
-static const uint8_t PIN_ERROR                        = 11; ///< Error LED pin number
+static const uint8_t PIN_WARNING                      = 11; ///< Warning LED pin number
+static const uint8_t PIN_ERROR                        = 12; ///< Error LED pin number
 static const uint8_t LED_HOUSEKEEPING_INTERVAL_MS     = 20; ///< How often to check for turn-off
 static const uint8_t LED_HOUSEKEEPING_PHASE_MS        =  1; ///< Turn-off phase
 

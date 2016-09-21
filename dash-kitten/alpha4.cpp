@@ -13,8 +13,9 @@ void Alpha4::housekeeping(void)
   int16_t egt_degC = Thermocouple_EGT.readCelsius();
   egt_g.val( egt_degC );
 
-  String egt_degC_str(egt_degC);
-  int8_t blank_spaces = 4 - egt_degC_str.length();
+  char egt_degC_str[6];
+  snprintf(egt_degC_str, 6, "%d", egt_degC);
+  int8_t blank_spaces = 4 - strlen(egt_degC_str);
   for( int i = 0; i < 4; i++ ) {
     char c;
     if (blank_spaces < 0) {
@@ -25,7 +26,7 @@ void Alpha4::housekeeping(void)
       // Prevent leading zeroes.
       c = ' ';
     } else {
-      c = egt_degC_str.charAt(i - blank_spaces);
+      c = egt_degC_str[i - blank_spaces];
     }
     alpha4.writeDigitAscii( i, c );
   }
