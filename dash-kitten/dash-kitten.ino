@@ -36,6 +36,21 @@ Alpha4 a4;
  */
 void setup()
 {
+  pinMode(13, OUTPUT);
+      digitalWrite(13, HIGH);
+delay(200);
+    digitalWrite(13, LOW);
+delay(200);
+    digitalWrite(13, HIGH);
+delay(200);
+    digitalWrite(13, LOW);
+delay(200);
+
+    digitalWrite(13, HIGH);
+delay(200);
+    digitalWrite(13, LOW);
+delay(200);
+
   Serial.begin(115200);
   Serial.println("Boot");
 
