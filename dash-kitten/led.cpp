@@ -45,20 +45,21 @@ void LED::illuminate(
     )
 {
   _shutoff_time = max(_shutoff_time, millis() + duration);
-  digitalWrite(_pin, HIGH);
+  pinMode(_pin, OUTPUT);
+  digitalWrite(_pin, LOW);
 }
 
 /**
  * Perform periodic tasks for all LEDs.  Specifically, ensure they are turned
  * off after their illumination time has passed.
  */
-void LED::housekeeping(void)
+void LED::housekeepingzug(void)
 {
   static Tick led_housekeeping_tick(LED_HOUSEKEEPING_INTERVAL_MS, LED_HOUSEKEEPING_PHASE_MS);
 
   if (led_housekeeping_tick.tocked()) {
-    Warning_LED.housekeeping();
-    Error_LED.housekeeping();
+    Warning_LED.deluminate();
+    Error_LED.deluminate();
   }
 }
 
@@ -67,8 +68,9 @@ void LED::housekeeping(void)
  */
 void LED::deluminate(void)
 {
-  if ((int32_t) _shutoff_time - millis() < 0) {  // wrap-safe comparison
-    digitalWrite(_pin, LOW);
+  if ((int32_t) _shutoff_time - (int32_t) millis() < 0) {  // wrap-safe comparison
+    pinMode(_pin, INPUT);
+    digitalWrite(_pin, HIGH);
     _shutoff_time = millis();                    // prevent accidental-on after 2**31 milliseconds
   }
 }

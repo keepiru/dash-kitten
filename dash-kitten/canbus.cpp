@@ -38,8 +38,8 @@
 #define ADC_PAGE_2_PHASE_MS 25         ///< When to start first ADC Page 2 transmission
 #define ADC_PAGE_2_ID 0x21             ///< Destination CAN ID for Page 2
 
-//#define MS3_RTC_REQ_ADDR 28869304
-//#define MS3_RTC_WRITE_ADDR 644
+#define MS3_RTC_REQ_ADDR 28869304
+#define MS3_RTC_WRITE_ADDR 644
 
 MCP_CAN CAN0(PIN_CAN_CS);              ///< CAN BUS transceiver to communicate with ECU
 
@@ -113,7 +113,6 @@ void CanBus::handleCANFrame(void)
 
   CAN0.readMsgBuf(&len, rxBuf);
   rxId = CAN0.getCanId();
-  Serial.println(rxId);
 
 #ifdef DEBUG_CAN_ID
   if (rxId == DEBUG_CAN_ID) {
@@ -137,20 +136,20 @@ void CanBus::handleCANFrame(void)
 #endif
 
   switch (rxId) {
-//    case MS3_RTC_REQ_ADDR:
-//      {
-//        DateTime dt = RTC.now();
-//        can_send_rtc( &dt );
-//      }
-//      break;
-//
-//    case MS3_RTC_WRITE_ADDR:
-//      {
-//        DateTime dt = dateTimeFromCan( rxBuf, len );
-//        RTC.adjust( dt );
-//        Serial.print( F( "RTC updated from MS3" ) );
-//      }
-//      break;
+    case MS3_RTC_REQ_ADDR:
+      {
+        DateTime dt = RTC.now();
+        can_send_rtc( &dt );
+      }
+      break;
+
+    case MS3_RTC_WRITE_ADDR:
+      {
+        DateTime dt = dateTimeFromCan( rxBuf, len );
+        RTC.adjust( dt );
+        Serial.print( F( "RTC updated from MS3" ) );
+      }
+      break;
 
     case 1520:
       rpm_g.val(           ntohs(*( int16_t *) &rxBuf[6]));  // RPM 1rpm
@@ -242,7 +241,6 @@ void CanBus::housekeeping(void)
   }
 
   if (!digitalRead(PIN_CAN_INT)) { // CAN frame waiting in receive buffer
-//    Serial.println("int");
     handleCANFrame();
   }
 }

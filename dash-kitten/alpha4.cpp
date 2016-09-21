@@ -10,6 +10,7 @@ void Alpha4::init(void)
 
 void Alpha4::housekeeping(void)
 {
+  return;
   int16_t egt_degC = Thermocouple_EGT.readCelsius();
   egt_g.val( egt_degC );
 

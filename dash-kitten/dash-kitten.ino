@@ -40,14 +40,21 @@ void setup()
   Serial.println("Boot");
 
   Wire.begin();
-//  RTC.begin();
-//  if( !RTC.isrunning() ) {
-//    Serial.println( F( "RTC is NOT running!  Set time via MS3." ) );
-//  }
+  Serial.println("1");
+  RTC.begin();
+  Serial.println("2");
+  if( !RTC.isrunning() ) {
+    Serial.println( F( "RTC is NOT running!  Set time via MS3." ) );
+  }
+  Serial.println("3");
 
-  //a4.init();
+  a4.init();
+  Serial.println("4");
   CanBus::init();
+  Serial.println("5");
   NextionObject::init();
+  Serial.println("6");
+  digitalWrite(13, HIGH);
 }
 
 /**
@@ -58,6 +65,6 @@ void loop()
 //  Serial.println("loop");
   NextionObject::housekeeping();
   CanBus::housekeeping();
-//  LED::housekeeping();
-//  a4.housekeeping();
+  LED::housekeepingzug();
+  a4.housekeeping();
 }

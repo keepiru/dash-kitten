@@ -31,7 +31,7 @@ class LED
     LED(uint8_t pin);
     void illuminate(uint32_t duration);
     void deluminate(void);
-    static void housekeeping(void);
+    static void housekeepingzug(void);
 };
 
 extern LED Warning_LED;
