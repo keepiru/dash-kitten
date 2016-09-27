@@ -70,10 +70,8 @@ void NextionObject::txt(
 )
 {
   // Ignore update if the current value is recent enough.
-  if (millis() < _last_update_time + _refresh_ms) return;
+  if (_old_txt == text && millis() < _last_update_time + _refresh_ms * 5) return;
   _last_update_time = millis();
-
-  if (_old_txt == text) return;
   _old_txt = text;
   _stream->print(_id);
   _stream->print(".txt=\"");
@@ -102,7 +100,10 @@ void NextionObject::pco(
   String color                         ///< color - New color as name "RED" or RGB(5,6,5) value "63488"
 )
 {
-  if (color != _old_pco) {             // Don't bother updating if the color is already set
+  static uint32_t last_color_refresh_time_ms;
+  // Don't bother updating if the color has been recently set to this value.
+  if (color != _old_pco || millis() > last_color_refresh_time_ms + 5 * _refresh_ms) {
+    last_color_refresh_time_ms = millis();
     _stream->print(_id);
     _stream->print(".pco=");
     _stream->print(color);
