@@ -183,6 +183,8 @@ void NextionObject::init(void)
   lcdstream.begin(115200);
   lcdstream.print(EOC);         // Terminate any partial command sent before boot
   warn_g.pco("RED");
+  delay(1000);   // Display the kittens for an extra second
+  lcdstream.print("page main0" EOC);
 }
 
 /**
