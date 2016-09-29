@@ -25,16 +25,23 @@
 #include "led.h"
 #include "nextion.h"
 #include "canbus.h"
+#include "dash_kitten.h"
 
 /**
  *  Boot-time initialization.
  */
 void setup()
 {
-  CanBus::init();
-  NextionObject::init();
   Serial.begin(115200);
   Serial.println("Boot");
+
+  RTC.begin();
+  if( !RTC.isrunning() ) {
+    Serial.println( F( "RTC is NOT running!  Set time via MS3." ) );
+  }
+
+  CanBus::init();
+  NextionObject::init();
 }
 
 /**

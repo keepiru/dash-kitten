@@ -41,6 +41,18 @@
 
 #define KNOCK_WARNING_DURATION_MS 1000 ///< How long to keep LEDs on during knock
 
+ /*
+  *  The MS3 CAN protocol does some nonstandard things: instead of using RTR it
+  *  just transmits a frame, then expects the receiver to decode the reply addr
+  *  from certain bits in the address.  We don't handle this properly - we've
+  *  just hardcoded the request and reply addresses.
+  *
+  *  http://www.msextra.com/doc/pdf/Megasquirt_29bit_CAN_Protocol-2015-01-20.pdf
+  */
+#define MS3_RTC_REQ_ADDR   28869304    ///< MS3 is requesting RTC data.  Addr encodes the response addr.
+#define MS3_RTC_REPLY_ADDR 0x9352838   ///< Hardcoded addr to send RTC reply to MS3.
+#define MS3_RTC_WRITE_ADDR 644         ///< MS3 is setting RTC.
+
 MCP_CAN CAN0(PIN_CAN_CS);              ///< CAN BUS transceiver to communicate with ECU
 
 /**
@@ -71,6 +83,46 @@ void CanBus::can_send_adc(
 }
 
 /**
+ * Decode MS3-CAN BCD format to DateTime.  The source data is similar to
+ * typical DS1307 BCD format, except the decade is broken.
+ */
+DateTime dateTimeFromCan( uint8_t *rxBuf, int len ) {
+  // the MS3 sends us 8 bytes, but the last one is always zero (should
+  // be the century).
+  DateTime ret( bcd_to_int( rxBuf[ 6 ] ) + 2000, // year
+      bcd_to_int( rxBuf[ 5 ] ),                   // month
+      bcd_to_int( rxBuf[ 4 ] ),                   // day
+      bcd_to_int( rxBuf[ 2 ] ),                   // hour
+      bcd_to_int( rxBuf[ 1 ] ),                   // minute
+      bcd_to_int( rxBuf[ 0 ] ) );                 // second
+  return ret;
+}
+
+/**
+ * Transmit DateTime to MS3.
+ *
+ * @note this is NOT BCD-encoded, despite how the MS3 sends DateTime.
+ * @see dateTimeFromCan
+ */
+void CanBus::can_send_rtc(
+  DateTime * dt                        ///< Time to transmit
+  )
+{
+  uint8_t txBuf[8];
+
+  txBuf[ 0 ] = dt->second();
+  txBuf[ 1 ] = dt->minute();
+  txBuf[ 2 ] = dt->hour();
+  txBuf[ 3 ] = dt->dayOfWeek();
+  txBuf[ 4 ] = dt->day();
+  txBuf[ 5 ] = dt->month();
+  txBuf[ 6 ] = dt->year() >> 8;
+  txBuf[ 7 ] = dt->year() & 0xff;
+
+  CAN0.sendMsgBuf( MS3_RTC_REPLY_ADDR, 1, 8, txBuf );
+}
+
+/**
  *  Receive and process an incoming CAN frame.  Any known ids will be
  *  decoded and sent to the LCD.
  */
@@ -89,7 +141,7 @@ void CanBus::handleCANFrame(void)
     Serial.print(rxId);
     Serial.print(" ");
     uint8_t i;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < len; i++) {
       Serial.print(rxBuf[i], HEX);
       Serial.print(" ");
     }
@@ -98,6 +150,21 @@ void CanBus::handleCANFrame(void)
 #endif
 
   switch (rxId) {
+    case MS3_RTC_REQ_ADDR:
+      {
+        DateTime dt = RTC.now();
+        can_send_rtc( &dt );
+      }
+      break;
+
+    case MS3_RTC_WRITE_ADDR:
+      {
+        DateTime dt = dateTimeFromCan( rxBuf, len );
+        RTC.adjust( dt );
+        Serial.print( F( "RTC updated from MS3" ) );
+      }
+      break;
+
     case 1520:
       rpm_g.val(           ntohs(*( int16_t *) &rxBuf[6]));  // RPM 1rpm
       break;

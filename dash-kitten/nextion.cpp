@@ -26,6 +26,7 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <math.h>
+#include "dash_kitten.h"
 #include "nextion.h"
 #include "tick.h"
 
@@ -202,8 +203,20 @@ void NextionObject::check_watchdogs()
   mat_g.watchdog();
   oit_g.watchdog();
   bat_g.watchdog();
+  clk_g.watchdog();
   warn_g.watchdog();
   lcdstream.print("clk.val=0" EOC);  // Reset the Nextion watchdog
+}
+
+/**
+ * Read the current time from the RTC and display it.
+ */
+void NextionObject::update_clock() {
+  DateTime dt = RTC.now();
+  char buf[ 10 ];
+  snprintf(buf, sizeof(buf), "%02u:%02u:%02u",
+    dt.hour(), dt.minute(), dt.second());
+  clk_g.txt( buf );
 }
 
 /**
@@ -217,6 +230,7 @@ void NextionObject::housekeeping(void)
   if (housekeeping_tick.tocked()) {
     refresh_labels();
     check_watchdogs();
+    update_clock();
   }
 }
 
@@ -240,5 +254,6 @@ NextionObject map_g(&lcdstream,    "v0", "l0",     "",    10,        0,       0,
               mat_g(&lcdstream,    "b1",   "", "matF",    10,        0,     200,        400,        1400,    1600, 200),
               oit_g(&lcdstream,    "b2",   "", "oilF",     1,        0,  -32768,     -32768,       32767,   32767, 1000),
               bat_g(&lcdstream,    "b3",   "",    "v",    10,        1,     120,        130,         147,     150, 500),
+              clk_g(&lcdstream,    "c0",   "",     "",     1,        0,  -32768,     -32768,       32767,   32767, 200),
               warn_g(&lcdstream, "warn",   "",     "",     0,        0,       0,          0,           0,       0, 50);
 

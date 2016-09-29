@@ -17,6 +17,10 @@
  *  with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <RTC_DS3231.h>
+
+extern RTC_DS3231 RTC;
+
 #define htons(x) ( ((x)<< 8 & 0xFF00) | \
                    ((x)>> 8 & 0x00FF) )
 #define ntohs(x) htons(x)
@@ -25,3 +29,5 @@
                    ((x)>> 8 & 0x0000FF00UL) | \
                    ((x)>>24 & 0x000000FFUL) )
 #define ntohl(x) htonl(x)
+
+#define bcd_to_int(bcd) ( (bcd >> 4) * 10 + (bcd & 0xf) )
