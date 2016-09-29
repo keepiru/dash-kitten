@@ -75,7 +75,10 @@ void NextionObject::txt(
 
   if (_old_txt == text) return;
   _old_txt = text;
-  _stream->print(_id + ".txt=\"" + text + "\"" + EOC);
+  _stream->print(_id);
+  _stream->print(".txt=\"");
+  _stream->print(text);
+  _stream->print("\"" EOC);
 }
 
 /**
@@ -85,7 +88,10 @@ void NextionObject::label(
   String text                          ///< Label text
 )
 {
-  _stream->print(_lid + ".txt=\"" + text + "\"" + EOC);
+  _stream->print(_lid);
+  _stream->print(".txt=\"");
+  _stream->print(text);
+  _stream->print("\"" EOC);
 }
 
 /**
@@ -97,7 +103,10 @@ void NextionObject::pco(
 )
 {
   if (color != _old_pco) {             // Don't bother updating if the color is already set
-    _stream->print(_id + ".pco=" + color + EOC);
+    _stream->print(_id);
+    _stream->print(".pco=");
+    _stream->print(color);
+    _stream->print(EOC);
   }
   _old_pco = color;
 }
@@ -124,8 +133,11 @@ void NextionObject::val(
   for (i = 0; i < _decimals; i++) { // left-shift-decimal by _decimals (beware of overflows)
     value *= 10;
   }
-  String val_s = String(value / _scale);              // Scale after left-shift-decimal to preserve precision
-  String out_s = val_s.substring(0, val_s.length() - _decimals);         // print the part left of decimal
+  String val_s, out_s;
+  val_s.reserve(12);
+  out_s.reserve(12);
+  val_s = value / _scale;                                        // Scale after left-shift-decimal to preserve precision
+  out_s = val_s.substring(0, val_s.length() - _decimals);                // print the part left of decimal
   if (_decimals > 0) {                                                   // If we ARE printing a fraction...
     out_s += ".";                                                        // ... print the decimal ...
     out_s += val_s.substring(val_s.length() - _decimals);                // ... and the part right of decimal
