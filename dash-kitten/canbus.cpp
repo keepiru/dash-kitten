@@ -60,7 +60,7 @@ MCP_CAN CAN0(PIN_CAN_CS);              ///< CAN BUS transceiver to communicate w
  */
 void CanBus::init(void)
 {
-  CAN0.begin(CAN_500KBPS);             // Assumes module with 16MHz clock - use CAN_1000KBPS for 8MHz clock.
+  CAN0.begin(CAN_1000KBPS);             // Actually 500Kbps, but we're using a module with an 8MHz clock instead of 16
 }
 
 /**
