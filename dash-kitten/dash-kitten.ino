@@ -26,6 +26,7 @@
 #include "nextion.h"
 #include "canbus.h"
 #include "dash_kitten.h"
+#include "thermistor.h"
 
 /**
  *  Boot-time initialization.
@@ -52,4 +53,5 @@ void loop()
   NextionObject::housekeeping();
   CanBus::housekeeping();
   LED::housekeeping();
+  Thermistor::housekeeping();
 }
