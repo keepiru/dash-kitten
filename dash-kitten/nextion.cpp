@@ -17,8 +17,8 @@
  *  with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define PIN_LCD_RX 5                  ///< Nextion LCD receive pin
-#define PIN_LCD_TX 4                  ///< Nextion LCD transmit pin
+#define PIN_LCD_RX 19                  ///< Nextion LCD receive pin
+#define PIN_LCD_TX 18                  ///< Nextion LCD transmit pin
 
 #define HOUSEKEEPING_INTERVAL_MS 200  ///< How frequently to run watchdog, display refresh, etc
 #define HOUSEKEEPING_PHASE_MS 100     ///< When to start first housekeeping run
